@@ -3,16 +3,8 @@ name "Level"
 (array)entities {
     - name="Lighting" prototype="Lighting"
     - name="Backdrop" prototype="Backdrop"
-    - {
-        name "Player"
-        prototype "Player"
-        (array)behaviors "Player"
-    }
-    - {
-        name "Camera"
-        prototype "Camera"
-        (array)behaviors "CameraFollow"
-    }
+    - name="Player" prototype="Player"
+    - name="Camera" prototype="Camera"
     - name="JumpKey" prototype="JumpKey"
     - name="JumpKeyC" prototype="JumpKeyC"
     - name="JumpPad" prototype="JumpPad"
