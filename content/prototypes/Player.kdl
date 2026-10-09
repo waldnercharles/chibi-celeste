@@ -1,8 +1,8 @@
 name "Player"
 components {
-    GAME.GameAppearance color=0x5b6ee1ff height=11.0 layer=3 width=8.0
     GAME.GameGlobalBinding name="Player"
     (object)GAME.GameInput
+    GAME.GameSprite frame_height=16 frame_width=16 image="content/images/climber.png" layer=4
     (object)GAME.GameTransform
 }
 (array)behaviors "Player"

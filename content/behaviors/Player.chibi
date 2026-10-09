@@ -58,6 +58,7 @@ behavior Player {
     dashDir := vec2(0, 0)
     beforeDashSpeed := vec2(0, 0)
     freezeTimer := 0
+    animTime := 0
     dashing: task
 
     // Hair, after Celeste's PlayerHair: circles that trail the head, drawn as
@@ -87,23 +88,41 @@ behavior Player {
     // ---------------------------------------------------------------- room
 
     function BuildRoom() {
-        // One box per horizontal run of solid tiles keeps the entity count low.
         for (y in 0..rows - 1) {
-            x := 0
-            while x < columns {
-                if tiles[y * columns + x] == 0 {
-                    x += 1
-                    continue
+            for (x in 0..columns - 1) {
+                if TileSolid(x, y) {
+                    tile := await spawn(Tile)
+                    tile.Transform = vec2(x * 8 + 4, y * 8 + 4)
+                    tile.Sprite.Frame = TileEdges(x, y)
                 }
-                start := x
-                while x < columns && tiles[y * columns + x] != 0 {
-                    x += 1
-                }
-                block := await spawn(Tile)
-                block.Transform = vec2((start + x) * 4, y * 8 + 4)
-                block.Appearance.Width = (x - start) * 8
             }
         }
+    }
+
+    // The tiles.png frame for a tile: 1 open above, 2 left, 4 right, 8 below.
+    function TileEdges(x: int, y: int) {
+        edges := 0
+        if !TileSolid(x, y - 1) {
+            edges += 1
+        }
+        if !TileSolid(x - 1, y) {
+            edges += 2
+        }
+        if !TileSolid(x + 1, y) {
+            edges += 4
+        }
+        if !TileSolid(x, y + 1) {
+            edges += 8
+        }
+        return edges
+    }
+
+    // Outside the room counts as solid, so its border shows no edges.
+    function TileSolid(x: int, y: int) {
+        if x < 0 || x >= columns || y < 0 || y >= rows {
+            return true
+        }
+        return tiles[y * columns + x] != 0
     }
 
     function SolidAt(x: double, y: double) {
@@ -820,11 +839,8 @@ behavior Player {
         for (i in 0..4) {
             line := await spawn(HairNode)
             line.Appearance.Color = Rgb(0, 0, 0)
-            line.Appearance.Layer = 1
+            line.Appearance.Layer = 2
             fill := await spawn(HairNode)
-            if i == 0 {
-                fill.Appearance.Layer = 4
-            }
             hairLine = array_add(hairLine, line)
             hairFill = array_add(hairFill, fill)
             hairNodes = array_add(hairNodes, HairRoot())
@@ -1026,12 +1042,41 @@ behavior Player {
     }
 
     function Present() {
-        height := 11
-        if ducking {
-            height = 6
-        }
-        self.Transform = vec2(pos.x, pos.y - height / 2)
-        self.Appearance.Height = height
+        animTime += dt
+        // The 16x16 frame stands on the feet.
+        self.Transform = vec2(pos.x, pos.y - 8)
+        self.Sprite.Frame = Frame()
+        self.Sprite.FlipX = facing < 0
         PresentHair()
+    }
+
+    // climber.png: 0-1 idle, 2-5 run, 6 jump, 7 fall, 8 dash, 9-10 climb, 11 duck.
+    function Frame() {
+        if mode == 2 {
+            return 8
+        }
+        if mode == 1 {
+            if lastClimbMove == 0 {
+                return 9
+            }
+            return 9 + Cycle(8, 2)
+        }
+        if ducking {
+            return 11
+        }
+        if !onGround {
+            if speed.y < 0 {
+                return 6
+            }
+            return 7
+        }
+        if moveX != 0 {
+            return 2 + Cycle(12, 4)
+        }
+        return Cycle(2, 2)
+    }
+
+    function Cycle(fps: number, count: int) {
+        return cast<int>(floor(animTime * fps)) % count
     }
 }

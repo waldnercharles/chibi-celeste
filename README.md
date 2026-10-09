@@ -1,7 +1,7 @@
 # Celeste Movement
 
 Madeline's movement from Celeste, ported to Chibi script. Everything game-specific lives in
-`content/`: the engine supplies only input, transforms and shapes.
+`content/`: the engine supplies only input, transforms, shapes and sprites.
 
 - `behaviors/Player.chibi` ports the Normal, Climb and Dash states from
   [NoelFB/Celeste `Player.cs`](https://github.com/NoelFB/Celeste/blob/master/Source/Player/Player.cs):
@@ -24,9 +24,16 @@ Arrow keys are not movement sources in the engine yet.
 
 ## Art
 
-Shapes only for now: Celeste's sprites are not openly licensed. Candidate CC0 packs, if sprites are added:
+`tools/make_sprites.py` draws original pixel art after screenshots of Celeste: a red-haired climber in
+a blue jacket, and snowy dirt tiles. Celeste's own sprites are not openly licensed and this repository
+is public, so none are copied here.
 
-- [Kenney Pixel Platformer](https://kenney.nl/assets/pixel-platformer) - CC0
-- [Pixel Frog, Pixel Adventure 1](https://pixelfrog-assets.itch.io/pixel-adventure-1) - CC0
+- `images/climber.png` has twelve 16x16 frames: idle, run, jump, fall, dash, climb and duck. The
+  hair is simulated separately and drawn behind it.
+- `images/tiles.png` has sixteen 8x8 autotile frames. A tile's frame is the set of its open sides:
+  1 above (snow), 2 left, 4 right and 8 below.
 
-No third-party asset is included in this project.
+## Engine
+
+This needs coroutine tasks (#197), the script fixes and `GameSprite` component in #208, and the
+int-to-float fix in #206.
