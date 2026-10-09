@@ -71,6 +71,8 @@ behavior Player {
     hairB := 50
     hairFlashTimer := 0
     lastDashes := 1
+    // Begin awaits each spawn, and Tick can run before it finishes.
+    ready := false
 
     on Begin {
         tiles = Room.Tiles()
@@ -80,9 +82,10 @@ behavior Player {
         jumpKeys = [get_global_variable("JumpKey"), get_global_variable("JumpKeyC"), get_global_variable("JumpPad")]
         dashKeys = [get_global_variable("DashKey"), get_global_variable("DashKeyK"), get_global_variable("DashPad")]
         grabKeys = [get_global_variable("GrabKey"), get_global_variable("GrabKeyL"), get_global_variable("GrabPad")]
-        BuildRoom()
+        await BuildRoom()
         Respawn()
-        BuildHair()
+        await BuildHair()
+        ready = true
     }
 
     // ---------------------------------------------------------------- room
@@ -926,6 +929,9 @@ behavior Player {
     }
 
     on Tick {
+        if !ready {
+            return
+        }
         ReadInput()
         jumpBuffer = max(0, jumpBuffer - dt)
         dashBuffer = max(0, dashBuffer - dt)
