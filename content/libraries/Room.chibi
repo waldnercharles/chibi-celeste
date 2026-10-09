@@ -1,6 +1,6 @@
 library Room {
     // Tile rows, 1 = solid. Generated from room.txt; S marks the spawn tile.
-    function Tiles() -> (tiles: int[]) {
+    function Tiles() {
         return [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -28,15 +28,15 @@ library Room {
         ]
     }
 
-    function Columns() -> (columns: int) {
+    function Columns() {
         return 64
     }
 
-    function Rows() -> (rows: int) {
+    function Rows() {
         return 23
     }
 
-    function Start() -> (feet: CF_V2) {
+    function Start() {
         return vec2(20, 160)
     }
 }

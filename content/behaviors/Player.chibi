@@ -2,16 +2,15 @@
 // states). Units are pixels and seconds; +y is down. `pos` is the feet: the
 // bottom centre of the 8x11 hitbox.
 behavior Player {
-    tiles: int[] = []
-    columns: int = 0
-    rows: int = 0
+    tiles: number[]
+    columns := 0
+    rows := 0
     spawnPoint := vec2(0, 0)
 
     // Each binding entity holds one source, so every action reads several.
-    jumpKeys: entity[] = []
-    dashKeys: entity[] = []
-    grabKeys: entity[] = []
-
+    jumpKeys: entity[]
+    dashKeys: entity[]
+    grabKeys: entity[]
     pos := vec2(0, 0)
     remainder := vec2(0, 0)
     speed := vec2(0, 0)
@@ -63,9 +62,9 @@ behavior Player {
 
     // Hair, after Celeste's PlayerHair: circles that trail the head, drawn as
     // black outlines behind coloured fills. Node 0 is the bangs.
-    hairNodes: CF_V2[] = []
-    hairFill: entity[] = []
-    hairLine: entity[] = []
+    hairNodes: CF_V2[]
+    hairFill: entity[]
+    hairLine: entity[]
     hairR := 172
     hairG := 50
     hairB := 50
@@ -89,7 +88,7 @@ behavior Player {
 
     function BuildRoom() {
         // One box per horizontal run of solid tiles keeps the entity count low.
-        for (y in 0 .. rows - 1) {
+        for (y in 0..rows - 1) {
             x := 0
             while x < columns {
                 if tiles[y * columns + x] == 0 {
@@ -107,7 +106,7 @@ behavior Player {
         }
     }
 
-    function SolidAt(x: double, y: double) -> (solid: bool) {
+    function SolidAt(x: double, y: double) {
         tx := cast<int>(floor(x / 8))
         ty := cast<int>(floor(y / 8))
         if tx < 0 || tx >= columns || ty < 0 {
@@ -120,7 +119,7 @@ behavior Player {
     }
 
     // Does the hitbox overlap a solid with its feet at (x, y)?
-    function CollideAt(x: double, y: double) -> (hit: bool) {
+    function CollideAt(x: double, y: double) {
         height := 11
         if ducking {
             height = 6
@@ -128,7 +127,7 @@ behavior Player {
         return BoxSolid(x - 4, y - height, x + 4, y)
     }
 
-    function BoxSolid(left: double, top: double, right: double, bottom: double) -> (hit: bool) {
+    function BoxSolid(left: double, top: double, right: double, bottom: double) {
         ty := floor(top / 8) * 8
         while ty < bottom {
             tx := floor(left / 8) * 8
@@ -143,11 +142,11 @@ behavior Player {
         return false
     }
 
-    function CanUnDuckAt(x: double, y: double) -> (free: bool) {
+    function CanUnDuckAt(x: double, y: double) {
         return !BoxSolid(x - 4, y - 11, x + 4, y)
     }
 
-    function CanUnDuck() -> (free: bool) {
+    function CanUnDuck() {
         return !ducking || CanUnDuckAt(pos.x, pos.y)
     }
 
@@ -173,29 +172,27 @@ behavior Player {
 
     function MoveHExact(amount: double) {
         step := sign(amount)
-        move := amount
-        while move != 0 {
+        while amount != 0 {
             if CollideAt(pos.x + step, pos.y) {
                 remainder.x = 0
                 OnCollideH()
                 return
             }
             pos.x += step
-            move -= step
+            amount -= step
         }
     }
 
     function MoveVExact(amount: double) {
         step := sign(amount)
-        move := amount
-        while move != 0 {
+        while amount != 0 {
             if CollideAt(pos.x, pos.y + step) {
                 remainder.y = 0
                 OnCollideV()
                 return
             }
             pos.y += step
-            move -= step
+            amount -= step
         }
     }
 
@@ -206,7 +203,7 @@ behavior Player {
                 return
             }
             if speed.y == 0 && speed.x != 0 {
-                for (i in 1 .. 4) {
+                for (i in 1..4) {
                     if TryCornerNudge(sign(speed.x), i) {
                         return
                     }
@@ -221,7 +218,7 @@ behavior Player {
         dashAttackTimer = 0
     }
 
-    function TryCornerNudge(dir: double, i: double) -> (moved: bool) {
+    function TryCornerNudge(dir: double, i: double) {
         if !CollideAt(pos.x + dir, pos.y + i) {
             pos.y += i
             pos.x += dir
@@ -235,7 +232,7 @@ behavior Player {
         return false
     }
 
-    function DuckFreeAt(x: double, y: double) -> (free: bool) {
+    function DuckFreeAt(x: double, y: double) {
         return !BoxSolid(x - 4, y - 6, x + 4, y)
     }
 
@@ -243,7 +240,7 @@ behavior Player {
         if speed.y > 0 {
             if mode == 2 && !dashStartedOnGround {
                 if speed.x <= 0 {
-                    for (i in 1 .. 4) {
+                    for (i in 1..4) {
                         if !OnGroundAt(pos.x - i, pos.y) {
                             pos.x -= i
                             pos.y += 1
@@ -252,7 +249,7 @@ behavior Player {
                     }
                 }
                 if speed.x >= 0 {
-                    for (i in 1 .. 4) {
+                    for (i in 1..4) {
                         if !OnGroundAt(pos.x + i, pos.y) {
                             pos.x += i
                             pos.y += 1
@@ -271,7 +268,7 @@ behavior Player {
             if speed.y < 0 {
                 // Upward corner correction slides around ledges by up to 4px.
                 if speed.x <= 0 {
-                    for (i in 1 .. 4) {
+                    for (i in 1..4) {
                         if !CollideAt(pos.x - i, pos.y - 1) {
                             pos.x -= i
                             pos.y -= 1
@@ -280,7 +277,7 @@ behavior Player {
                     }
                 }
                 if speed.x >= 0 {
-                    for (i in 1 .. 4) {
+                    for (i in 1..4) {
                         if !CollideAt(pos.x + i, pos.y - 1) {
                             pos.x += i
                             pos.y -= 1
@@ -297,11 +294,11 @@ behavior Player {
         speed.y = 0
     }
 
-    function OnGroundAt(x: double, y: double) -> (grounded: bool) {
+    function OnGroundAt(x: double, y: double) {
         return CollideAt(x, y + 1)
     }
 
-    function Approach(current: double, target: double, step: double) -> (result: double) {
+    function Approach(current: double, target: double, step: double) {
         if current < target {
             return min(current + step, target)
         }
@@ -338,11 +335,11 @@ behavior Player {
         dashHeld = dash
     }
 
-    function GrabHeld() -> (held: bool) {
+    function GrabHeld() {
         return Held(grabKeys)
     }
 
-    function Held(keys: entity[]) -> (held: bool) {
+    function Held(keys: entity[]) {
         foreach (key in keys) {
             if key.ActionBinding.Pressed {
                 return true
@@ -351,11 +348,11 @@ behavior Player {
         return false
     }
 
-    function JumpPressed() -> (pressed: bool) {
+    function JumpPressed() {
         return jumpBuffer > 0
     }
 
-    function CanDash() -> (can: bool) {
+    function CanDash() {
         return dashBuffer > 0 && dashCooldownTimer <= 0 && dashes > 0
     }
 
@@ -422,15 +419,15 @@ behavior Player {
         }
     }
 
-    function WallJumpCheck(dir: double) -> (wall: bool) {
+    function WallJumpCheck(dir: double) {
         return CollideAt(pos.x + dir * 3, pos.y)
     }
 
-    function ClimbCheck(dir: double, yAdd: double) -> (wall: bool) {
+    function ClimbCheck(dir: double, yAdd: double) {
         return CollideAt(pos.x + dir * 2, pos.y + yAdd)
     }
 
-    function IsTired() -> (tired: bool) {
+    function IsTired() {
         boost := 0
         if wallBoostTimer > 0 {
             boost = 27.5
@@ -440,14 +437,14 @@ behavior Player {
 
     // --------------------------------------------------------------- normal
 
-    function NormalUpdate() -> (next: double) {
+    function NormalUpdate() {
         if GrabHeld() && !IsTired() && !ducking && speed.y >= 0 && sign(speed.x) != -facing {
             if ClimbCheck(facing, 0) {
                 ducking = false
                 return 1
             }
             if moveY < 1 {
-                for (i in 1 .. 2) {
+                for (i in 1..2) {
                     if !CollideAt(pos.x, pos.y - i) && ClimbCheck(facing, -i) {
                         MoveVExact(-i)
                         return 1
@@ -565,7 +562,7 @@ behavior Player {
         climbNoMoveTimer = 0.1
         wallBoostTimer = 0
         lastClimbMove = 0
-        for (i in 1 .. 2) {
+        for (i in 1..2) {
             if CollideAt(pos.x + facing, pos.y) {
                 break
             }
@@ -573,7 +570,7 @@ behavior Player {
         }
     }
 
-    function ClimbUpdate() -> (next: double) {
+    function ClimbUpdate() {
         climbNoMoveTimer -= dt
         if onGround {
             stamina = 110
@@ -656,7 +653,7 @@ behavior Player {
     }
 
     // True when the hands are above the top of the wall.
-    function SlipCheck(addY: double) -> (slipping: bool) {
+    function SlipCheck(addY: double) {
         x := pos.x - 5
         if facing == 1 {
             x = pos.x + 4
@@ -680,7 +677,7 @@ behavior Player {
 
     // ----------------------------------------------------------------- dash
 
-    function StartDash() -> (next: double) {
+    function StartDash() {
         dashes = max(0, dashes - 1)
         dashBuffer = 0
         return 2
@@ -736,7 +733,7 @@ behavior Player {
         mode = 0
     }
 
-    function DashUpdate() -> (next: double) {
+    function DashUpdate() {
         if dashDir.y == 0 {
             if CanUnDuck() && JumpPressed() && jumpGraceTimer > 0 {
                 cancel dashing
@@ -773,7 +770,7 @@ behavior Player {
     }
 
     // Eight-way aim from the movement keys, defaulting to facing.
-    function AimDirection() -> (dir: CF_V2) {
+    function AimDirection() {
         if moveX == 0 && moveY == 0 {
             return vec2(facing, 0)
         }
@@ -820,7 +817,7 @@ behavior Player {
     // ---------------------------------------------------------------- hair
 
     function BuildHair() {
-        for (i in 0 .. 4) {
+        for (i in 0..4) {
             line := await spawn(HairNode)
             line.Appearance.Color = Rgb(0, 0, 0)
             line.Appearance.Layer = 1
@@ -834,7 +831,7 @@ behavior Player {
         }
     }
 
-    function HairRoot() -> (root: CF_V2) {
+    function HairRoot() {
         if ducking {
             return pos + vec2(0, -5)
         }
@@ -846,7 +843,7 @@ behavior Player {
         hairNodes[0] = HairRoot()
         target := hairNodes[0] + vec2(-facing, 2)
         prev := hairNodes[0]
-        for (i in 1 .. count - 1) {
+        for (i in 1..count - 1) {
             step := (1 - cast<number>(i) / count * 0.5) * 64 * dt
             node := MoveToward(hairNodes[i], target, step)
             if distance(node, prev) > 3 {
@@ -859,7 +856,7 @@ behavior Player {
         UpdateHairColor()
     }
 
-    function MoveToward(start: CF_V2, goal: CF_V2, step: double) -> (at: CF_V2) {
+    function MoveToward(start: CF_V2, goal: CF_V2, step: double) {
         gap := distance(start, goal)
         if gap <= step {
             return goal
@@ -893,7 +890,7 @@ behavior Player {
     function PresentHair() {
         count := length(hairNodes)
         color := Rgb(hairR, hairG, hairB)
-        for (i in 0 .. count - 1) {
+        for (i in 0..count - 1) {
             size := (0.25 + (1 - cast<number>(i) / count) * 0.75) * 8
             line := hairLine[i]
             line.Transform = hairNodes[i]
@@ -908,7 +905,7 @@ behavior Player {
     }
 
     // Packs 0-255 channels into the 0xRRGGBBAA an Appearance colour takes.
-    function Rgb(r: double, g: double, b: double) -> (color: uint) {
+    function Rgb(r: double, g: double, b: double) {
         return cast<uint>(cast<int>(r) * 16777216 + cast<int>(g) * 65536 + cast<int>(b) * 256 + 255)
     }
 
