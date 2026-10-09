@@ -1,5 +1,5 @@
 name "Tile"
 components {
-    GAME.GameAppearance color=0x847e87ff height=8.0 layer=3 width=8.0
+    GAME.GameSprite frame_height=8 frame_width=8 image="content/images/tiles.png" layer=1
     (object)GAME.GameTransform
 }

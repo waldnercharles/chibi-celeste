@@ -1,5 +1,5 @@
 name "HairNode"
 components {
-    GAME.GameAppearance color=0xac3232ff height=8.0 layer=2 shape="Circle" width=8.0
+    GAME.GameAppearance color=0xac3232ff height=8.0 layer=3 shape="Circle" width=8.0
     (object)GAME.GameTransform
 }
