@@ -21,14 +21,3 @@ Madeline's movement from Celeste, ported to Chibi script. Everything game-specif
 | Grab | Z or L | Right shoulder |
 
 Arrow keys are not movement sources in the engine yet.
-
-## Art
-
-`tools/make_sprites.py` draws original pixel art after screenshots of Celeste: a red-haired climber in
-a blue jacket, and snowy dirt tiles. Celeste's own sprites are not openly licensed and this repository
-is public, so none are copied here.
-
-- `images/climber.png` has twelve 16x16 frames: idle, run, jump, fall, dash, climb and duck. The
-  hair is simulated separately and drawn behind it.
-- `images/tiles.png` has sixteen 8x8 autotile frames. A tile's frame is the set of its open sides:
-  1 above (snow), 2 left, 4 right and 8 below.
