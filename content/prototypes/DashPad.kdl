@@ -1,0 +1,5 @@
+name "DashPad"
+components {
+    GAME.GameActionBinding action="Dash" source="Pad X"
+    GAME.GameGlobalBinding name="DashPad"
+}

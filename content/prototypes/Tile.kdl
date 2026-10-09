@@ -1,0 +1,5 @@
+name "Tile"
+components {
+    GAME.GameAppearance color=0x847e87ff height=8.0 layer=3 width=8.0
+    (object)GAME.GameTransform
+}

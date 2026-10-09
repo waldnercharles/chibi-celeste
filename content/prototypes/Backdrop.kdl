@@ -1,0 +1,5 @@
+name "Backdrop"
+components {
+    GAME.GameAppearance color=0x1b1e34ff height=184.0 width=512.0
+    GAME.GameTransform x=256.0 y=92.0
+}

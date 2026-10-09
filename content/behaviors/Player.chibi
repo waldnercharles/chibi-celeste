@@ -1,0 +1,1040 @@
+// Madeline's movement, ported from Celeste's Player.cs (Normal, Climb and Dash
+// states). Units are pixels and seconds; +y is down. `pos` is the feet: the
+// bottom centre of the 8x11 hitbox.
+behavior Player {
+    tiles: int[] = []
+    columns: int = 0
+    rows: int = 0
+    spawnPoint := vec2(0, 0)
+
+    // Each binding entity holds one source, so every action reads several.
+    jumpKeys: entity[] = []
+    dashKeys: entity[] = []
+    grabKeys: entity[] = []
+
+    pos := vec2(0, 0)
+    remainder := vec2(0, 0)
+    speed := vec2(0, 0)
+    facing := 1
+    moveX := 0
+    moveY := 0
+    onGround := false
+    wasOnGround := false
+    ducking := false
+
+    // 0 normal, 1 climb, 2 dash
+    mode := 0
+
+    jumpHeld := false
+    jumpBuffer := 0
+    dashHeld := false
+    dashBuffer := 0
+
+    jumpGraceTimer := 0
+    varJumpTimer := 0
+    varJumpSpeed := 0
+    autoJump := false
+    autoJumpTimer := 0
+    forceMoveX := 0
+    forceMoveXTimer := 0
+    maxFall := 160
+    wallSlideDir := 0
+    wallSlideTimer := 1.2
+    wallSpeedRetentionTimer := 0
+    wallSpeedRetained := 0
+    wallBoostDir := 0
+    wallBoostTimer := 0
+    hopWaitX := 0
+    hopWaitXSpeed := 0
+    stamina := 110
+    climbNoMoveTimer := 0
+    lastClimbMove := 0
+
+    dashes := 1
+    maxDashes := 1
+    dashCooldownTimer := 0
+    dashRefillCooldownTimer := 0
+    dashAttackTimer := 0
+    dashStartedOnGround := false
+    dashDir := vec2(0, 0)
+    beforeDashSpeed := vec2(0, 0)
+    freezeTimer := 0
+    dashing: task
+
+    // Hair, after Celeste's PlayerHair: circles that trail the head, drawn as
+    // black outlines behind coloured fills. Node 0 is the bangs.
+    hairNodes: CF_V2[] = []
+    hairFill: entity[] = []
+    hairLine: entity[] = []
+    hairR := 172
+    hairG := 50
+    hairB := 50
+    hairFlashTimer := 0
+    lastDashes := 1
+
+    on Begin {
+        tiles = Room.Tiles()
+        columns = Room.Columns()
+        rows = Room.Rows()
+        spawnPoint = Room.Start()
+        jumpKeys = [get_global_variable("JumpKey"), get_global_variable("JumpKeyC"), get_global_variable("JumpPad")]
+        dashKeys = [get_global_variable("DashKey"), get_global_variable("DashKeyK"), get_global_variable("DashPad")]
+        grabKeys = [get_global_variable("GrabKey"), get_global_variable("GrabKeyL"), get_global_variable("GrabPad")]
+        BuildRoom()
+        Respawn()
+        BuildHair()
+    }
+
+    // ---------------------------------------------------------------- room
+
+    function BuildRoom() {
+        // One box per horizontal run of solid tiles keeps the entity count low.
+        for (y in 0 .. rows - 1) {
+            x := 0
+            while x < columns {
+                if tiles[y * columns + x] == 0 {
+                    x += 1
+                    continue
+                }
+                start := x
+                while x < columns && tiles[y * columns + x] != 0 {
+                    x += 1
+                }
+                block := await spawn(Tile)
+                block.Transform = vec2((start + x) * 4, y * 8 + 4)
+                block.Appearance.Width = (x - start) * 8
+            }
+        }
+    }
+
+    function SolidAt(x: double, y: double) -> (solid: bool) {
+        tx := cast<int>(floor(x / 8))
+        ty := cast<int>(floor(y / 8))
+        if tx < 0 || tx >= columns || ty < 0 {
+            return true
+        }
+        if ty >= rows {
+            return false
+        }
+        return tiles[ty * columns + tx] != 0
+    }
+
+    // Does the hitbox overlap a solid with its feet at (x, y)?
+    function CollideAt(x: double, y: double) -> (hit: bool) {
+        height := 11
+        if ducking {
+            height = 6
+        }
+        return BoxSolid(x - 4, y - height, x + 4, y)
+    }
+
+    function BoxSolid(left: double, top: double, right: double, bottom: double) -> (hit: bool) {
+        ty := floor(top / 8) * 8
+        while ty < bottom {
+            tx := floor(left / 8) * 8
+            while tx < right {
+                if SolidAt(tx, ty) {
+                    return true
+                }
+                tx += 8
+            }
+            ty += 8
+        }
+        return false
+    }
+
+    function CanUnDuckAt(x: double, y: double) -> (free: bool) {
+        return !BoxSolid(x - 4, y - 11, x + 4, y)
+    }
+
+    function CanUnDuck() -> (free: bool) {
+        return !ducking || CanUnDuckAt(pos.x, pos.y)
+    }
+
+    // ------------------------------------------------------------ movement
+
+    function MoveH(amount: double) {
+        remainder.x += amount
+        move := round(remainder.x)
+        if move != 0 {
+            remainder.x -= move
+            MoveHExact(move)
+        }
+    }
+
+    function MoveV(amount: double) {
+        remainder.y += amount
+        move := round(remainder.y)
+        if move != 0 {
+            remainder.y -= move
+            MoveVExact(move)
+        }
+    }
+
+    function MoveHExact(amount: double) {
+        step := sign(amount)
+        move := amount
+        while move != 0 {
+            if CollideAt(pos.x + step, pos.y) {
+                remainder.x = 0
+                OnCollideH()
+                return
+            }
+            pos.x += step
+            move -= step
+        }
+    }
+
+    function MoveVExact(amount: double) {
+        step := sign(amount)
+        move := amount
+        while move != 0 {
+            if CollideAt(pos.x, pos.y + step) {
+                remainder.y = 0
+                OnCollideV()
+                return
+            }
+            pos.y += step
+            move -= step
+        }
+    }
+
+    function OnCollideH() {
+        if mode == 2 {
+            if onGround && CanUnDuckAt(pos.x + sign(speed.x), pos.y) == false && DuckFreeAt(pos.x + sign(speed.x), pos.y) {
+                ducking = true
+                return
+            }
+            if speed.y == 0 && speed.x != 0 {
+                for (i in 1 .. 4) {
+                    if TryCornerNudge(sign(speed.x), i) {
+                        return
+                    }
+                }
+            }
+        }
+        if wallSpeedRetentionTimer <= 0 {
+            wallSpeedRetained = speed.x
+            wallSpeedRetentionTimer = 0.06
+        }
+        speed.x = 0
+        dashAttackTimer = 0
+    }
+
+    function TryCornerNudge(dir: double, i: double) -> (moved: bool) {
+        if !CollideAt(pos.x + dir, pos.y + i) {
+            pos.y += i
+            pos.x += dir
+            return true
+        }
+        if !CollideAt(pos.x + dir, pos.y - i) {
+            pos.y -= i
+            pos.x += dir
+            return true
+        }
+        return false
+    }
+
+    function DuckFreeAt(x: double, y: double) -> (free: bool) {
+        return !BoxSolid(x - 4, y - 6, x + 4, y)
+    }
+
+    function OnCollideV() {
+        if speed.y > 0 {
+            if mode == 2 && !dashStartedOnGround {
+                if speed.x <= 0 {
+                    for (i in 1 .. 4) {
+                        if !OnGroundAt(pos.x - i, pos.y) {
+                            pos.x -= i
+                            pos.y += 1
+                            return
+                        }
+                    }
+                }
+                if speed.x >= 0 {
+                    for (i in 1 .. 4) {
+                        if !OnGroundAt(pos.x + i, pos.y) {
+                            pos.x += i
+                            pos.y += 1
+                            return
+                        }
+                    }
+                }
+            }
+            if dashDir.x != 0 && dashDir.y > 0 && mode == 2 {
+                dashDir = vec2(sign(dashDir.x), 0)
+                speed.y = 0
+                speed.x *= 1.2
+                ducking = true
+            }
+        } else {
+            if speed.y < 0 {
+                // Upward corner correction slides around ledges by up to 4px.
+                if speed.x <= 0 {
+                    for (i in 1 .. 4) {
+                        if !CollideAt(pos.x - i, pos.y - 1) {
+                            pos.x -= i
+                            pos.y -= 1
+                            return
+                        }
+                    }
+                }
+                if speed.x >= 0 {
+                    for (i in 1 .. 4) {
+                        if !CollideAt(pos.x + i, pos.y - 1) {
+                            pos.x += i
+                            pos.y -= 1
+                            return
+                        }
+                    }
+                }
+                if varJumpTimer < 0.15 {
+                    varJumpTimer = 0
+                }
+            }
+        }
+        dashAttackTimer = 0
+        speed.y = 0
+    }
+
+    function OnGroundAt(x: double, y: double) -> (grounded: bool) {
+        return CollideAt(x, y + 1)
+    }
+
+    function Approach(current: double, target: double, step: double) -> (result: double) {
+        if current < target {
+            return min(current + step, target)
+        }
+        return max(current - step, target)
+    }
+
+    // ---------------------------------------------------------------- input
+
+    function ReadInput() {
+        move := self.Input.Move
+        moveX = 0
+        if move.x > 0.3 {
+            moveX = 1
+        }
+        if move.x < -0.3 {
+            moveX = -1
+        }
+        moveY = 0
+        if move.y > 0.3 {
+            moveY = 1
+        }
+        if move.y < -0.3 {
+            moveY = -1
+        }
+        jump := Held(jumpKeys)
+        if jump && !jumpHeld {
+            jumpBuffer = 0.08
+        }
+        jumpHeld = jump
+        dash := Held(dashKeys)
+        if dash && !dashHeld {
+            dashBuffer = 0.08
+        }
+        dashHeld = dash
+    }
+
+    function GrabHeld() -> (held: bool) {
+        return Held(grabKeys)
+    }
+
+    function Held(keys: entity[]) -> (held: bool) {
+        foreach (key in keys) {
+            if key.ActionBinding.Pressed {
+                return true
+            }
+        }
+        return false
+    }
+
+    function JumpPressed() -> (pressed: bool) {
+        return jumpBuffer > 0
+    }
+
+    function CanDash() -> (can: bool) {
+        return dashBuffer > 0 && dashCooldownTimer <= 0 && dashes > 0
+    }
+
+    // ---------------------------------------------------------------- jumps
+
+    function BeginJump() {
+        jumpBuffer = 0
+        jumpGraceTimer = 0
+        varJumpTimer = 0.2
+        autoJump = false
+        dashAttackTimer = 0
+        wallSlideTimer = 1.2
+        wallBoostTimer = 0
+    }
+
+    function Jump() {
+        BeginJump()
+        speed.x += 40 * moveX
+        speed.y = -105
+        varJumpSpeed = speed.y
+    }
+
+    function SuperJump() {
+        BeginJump()
+        speed.x = 260 * facing
+        speed.y = -105
+        if ducking {
+            ducking = false
+            speed.x *= 1.25
+            speed.y *= 0.5
+        }
+        varJumpSpeed = speed.y
+    }
+
+    function WallJump(dir: double) {
+        ducking = false
+        BeginJump()
+        if moveX != 0 {
+            forceMoveX = dir
+            forceMoveXTimer = 0.16
+        }
+        speed.x = 130 * dir
+        speed.y = -105
+        varJumpSpeed = speed.y
+    }
+
+    function SuperWallJump(dir: double) {
+        ducking = false
+        BeginJump()
+        varJumpTimer = 0.25
+        speed.x = 170 * dir
+        speed.y = -160
+        varJumpSpeed = speed.y
+    }
+
+    function ClimbJump() {
+        if !onGround {
+            stamina -= 27.5
+        }
+        Jump()
+        if moveX == 0 {
+            wallBoostDir = -facing
+            wallBoostTimer = 0.2
+        }
+    }
+
+    function WallJumpCheck(dir: double) -> (wall: bool) {
+        return CollideAt(pos.x + dir * 3, pos.y)
+    }
+
+    function ClimbCheck(dir: double, yAdd: double) -> (wall: bool) {
+        return CollideAt(pos.x + dir * 2, pos.y + yAdd)
+    }
+
+    function IsTired() -> (tired: bool) {
+        boost := 0
+        if wallBoostTimer > 0 {
+            boost = 27.5
+        }
+        return stamina + boost < 20
+    }
+
+    // --------------------------------------------------------------- normal
+
+    function NormalUpdate() -> (next: double) {
+        if GrabHeld() && !IsTired() && !ducking && speed.y >= 0 && sign(speed.x) != -facing {
+            if ClimbCheck(facing, 0) {
+                ducking = false
+                return 1
+            }
+            if moveY < 1 {
+                for (i in 1 .. 2) {
+                    if !CollideAt(pos.x, pos.y - i) && ClimbCheck(facing, -i) {
+                        MoveVExact(-i)
+                        return 1
+                    }
+                }
+            }
+        }
+        if CanDash() {
+            return StartDash()
+        }
+
+        if ducking {
+            if onGround && moveY != 1 {
+                if CanUnDuck() {
+                    ducking = false
+                }
+            }
+        } else {
+            if onGround && moveY == 1 && speed.y >= 0 {
+                ducking = true
+            }
+        }
+
+        if ducking && onGround {
+            speed.x = Approach(speed.x, 0, 500 * dt)
+        } else {
+            mult := 0.65
+            if onGround {
+                mult = 1
+            }
+            if abs(speed.x) > 90 && sign(speed.x) == moveX {
+                speed.x = Approach(speed.x, 90 * moveX, 400 * mult * dt)
+            } else {
+                speed.x = Approach(speed.x, 90 * moveX, 1000 * mult * dt)
+            }
+        }
+
+        if moveY == 1 && speed.y >= 160 {
+            maxFall = Approach(maxFall, 240, 300 * dt)
+        } else {
+            maxFall = Approach(maxFall, 160, 300 * dt)
+        }
+
+        if !onGround {
+            fall := maxFall
+            if (moveX == facing || moveX == 0 && GrabHeld()) && moveY != 1 {
+                if speed.y >= 0 && wallSlideTimer > 0 && CollideAt(pos.x + facing, pos.y) && CanUnDuck() {
+                    ducking = false
+                    wallSlideDir = facing
+                }
+                if wallSlideDir != 0 {
+                    fall = mix(160, 20, wallSlideTimer / 1.2)
+                }
+            }
+            mult := 1
+            if abs(speed.y) < 40 && (jumpHeld || autoJump) {
+                mult = 0.5
+            }
+            speed.y = Approach(speed.y, fall, 900 * mult * dt)
+        }
+
+        if varJumpTimer > 0 {
+            if autoJump || jumpHeld {
+                speed.y = min(speed.y, varJumpSpeed)
+            } else {
+                varJumpTimer = 0
+            }
+        }
+
+        if JumpPressed() {
+            if jumpGraceTimer > 0 {
+                Jump()
+            } else {
+                if CanUnDuck() {
+                    TryWallJump()
+                }
+            }
+        }
+        return 0
+    }
+
+    function TryWallJump() {
+        if WallJumpCheck(1) {
+            if facing == 1 && GrabHeld() && stamina > 0 {
+                ClimbJump()
+                return
+            }
+            if dashAttackTimer > 0 && dashDir.x == 0 && dashDir.y == -1 {
+                SuperWallJump(-1)
+                return
+            }
+            WallJump(-1)
+            return
+        }
+        if WallJumpCheck(-1) {
+            if facing == -1 && GrabHeld() && stamina > 0 {
+                ClimbJump()
+                return
+            }
+            if dashAttackTimer > 0 && dashDir.x == 0 && dashDir.y == -1 {
+                SuperWallJump(1)
+                return
+            }
+            WallJump(1)
+        }
+    }
+
+    // ---------------------------------------------------------------- climb
+
+    function ClimbBegin() {
+        autoJump = false
+        speed.x = 0
+        speed.y *= 0.2
+        wallSlideTimer = 1.2
+        climbNoMoveTimer = 0.1
+        wallBoostTimer = 0
+        lastClimbMove = 0
+        for (i in 1 .. 2) {
+            if CollideAt(pos.x + facing, pos.y) {
+                break
+            }
+            pos.x += facing
+        }
+    }
+
+    function ClimbUpdate() -> (next: double) {
+        climbNoMoveTimer -= dt
+        if onGround {
+            stamina = 110
+        }
+        if JumpPressed() && CanUnDuck() {
+            if moveX == -facing {
+                WallJump(-facing)
+            } else {
+                ClimbJump()
+            }
+            return 0
+        }
+        if CanDash() {
+            return StartDash()
+        }
+        if !GrabHeld() {
+            return 0
+        }
+        if !CollideAt(pos.x + facing, pos.y) {
+            if speed.y < 0 {
+                ClimbHop()
+            }
+            return 0
+        }
+
+        target := 0
+        trySlip := false
+        if climbNoMoveTimer <= 0 {
+            if moveY == -1 {
+                target = -45
+                if CollideAt(pos.x, pos.y - 1) || CollideAt(pos.x, pos.y - 6) && SlipCheck(-1) {
+                    if speed.y < 0 {
+                        speed.y = 0
+                    }
+                    target = 0
+                    trySlip = true
+                } else {
+                    if SlipCheck(0) {
+                        ClimbHop()
+                        return 0
+                    }
+                }
+            } else {
+                if moveY == 1 {
+                    target = 80
+                    if onGround {
+                        if speed.y > 0 {
+                            speed.y = 0
+                        }
+                        target = 0
+                    }
+                } else {
+                    trySlip = true
+                }
+            }
+        } else {
+            trySlip = true
+        }
+        lastClimbMove = sign(target)
+        if trySlip && SlipCheck(0) {
+            target = 30
+        }
+        speed.y = Approach(speed.y, target, 900 * dt)
+        if moveY != 1 && speed.y > 0 && !CollideAt(pos.x + facing, pos.y + 1) {
+            speed.y = 0
+        }
+        if climbNoMoveTimer <= 0 {
+            if lastClimbMove == -1 {
+                stamina -= 45.4545 * dt
+            } else {
+                if lastClimbMove == 0 {
+                    stamina -= 10 * dt
+                }
+            }
+        }
+        if stamina <= 0 {
+            return 0
+        }
+        return 1
+    }
+
+    // True when the hands are above the top of the wall.
+    function SlipCheck(addY: double) -> (slipping: bool) {
+        x := pos.x - 5
+        if facing == 1 {
+            x = pos.x + 4
+        }
+        top := pos.y - 11 + 4 + addY
+        return !SolidAt(x, top) && !SolidAt(x, top - 4 + addY)
+    }
+
+    function ClimbHop() {
+        if CollideAt(pos.x + facing, pos.y) {
+            hopWaitX = facing
+            hopWaitXSpeed = 100 * facing
+        } else {
+            hopWaitX = 0
+            speed.x = 100 * facing
+        }
+        speed.y = min(speed.y, -120)
+        forceMoveX = 0
+        forceMoveXTimer = 0.2
+    }
+
+    // ----------------------------------------------------------------- dash
+
+    function StartDash() -> (next: double) {
+        dashes = max(0, dashes - 1)
+        dashBuffer = 0
+        return 2
+    }
+
+    function DashBegin() {
+        dashStartedOnGround = onGround
+        freezeTimer = 0.05
+        dashCooldownTimer = 0.2
+        dashRefillCooldownTimer = 0.1
+        wallSlideTimer = 1.2
+        dashAttackTimer = 0.3
+        beforeDashSpeed = speed
+        speed = vec2(0, 0)
+        dashDir = vec2(0, 0)
+        if !onGround && ducking && CanUnDuck() {
+            ducking = false
+        }
+        dashing = DashRoutine()
+    }
+
+    function DashRoutine() {
+        // Wait out the freeze, then one more frame, like Celeste's first yield.
+        while freezeTimer > 0 {
+            yield
+        }
+        yield
+        dir := AimDirection()
+        dashed := dir * 240
+        if sign(beforeDashSpeed.x) == sign(dashed.x) && abs(beforeDashSpeed.x) > abs(dashed.x) {
+            dashed.x = beforeDashSpeed.x
+        }
+        speed = dashed
+        dashDir = dir
+        if dir.x != 0 {
+            facing = sign(dir.x)
+        }
+        if onGround && dashDir.x != 0 && dashDir.y > 0 && speed.y > 0 {
+            dashDir = vec2(sign(dashDir.x), 0)
+            speed.y = 0
+            speed.x *= 1.2
+            ducking = true
+        }
+        await delay(0.15)
+        autoJump = true
+        autoJumpTimer = 0
+        if dashDir.y <= 0 {
+            speed = dashDir * 160
+        }
+        if speed.y < 0 {
+            speed.y *= 0.75
+        }
+        mode = 0
+    }
+
+    function DashUpdate() -> (next: double) {
+        if dashDir.y == 0 {
+            if CanUnDuck() && JumpPressed() && jumpGraceTimer > 0 {
+                cancel dashing
+                SuperJump()
+                return 0
+            }
+        }
+        if JumpPressed() && CanUnDuck() {
+            if dashDir.x == 0 && dashDir.y == -1 {
+                if WallJumpCheck(1) {
+                    cancel dashing
+                    SuperWallJump(-1)
+                    return 0
+                }
+                if WallJumpCheck(-1) {
+                    cancel dashing
+                    SuperWallJump(1)
+                    return 0
+                }
+            } else {
+                if WallJumpCheck(1) {
+                    cancel dashing
+                    WallJump(-1)
+                    return 0
+                }
+                if WallJumpCheck(-1) {
+                    cancel dashing
+                    WallJump(1)
+                    return 0
+                }
+            }
+        }
+        return 2
+    }
+
+    // Eight-way aim from the movement keys, defaulting to facing.
+    function AimDirection() -> (dir: CF_V2) {
+        if moveX == 0 && moveY == 0 {
+            return vec2(facing, 0)
+        }
+        return vec2_norm(vec2(moveX, moveY))
+    }
+
+    // ------------------------------------------------------------- per tick
+
+    function SetMode(next: double) {
+        if next == mode {
+            return
+        }
+        if mode == 0 {
+            wallBoostTimer = 0
+            wallSpeedRetentionTimer = 0
+            hopWaitX = 0
+        }
+        if mode == 1 {
+            wallSpeedRetentionTimer = 0
+        }
+        mode = next
+        if mode == 0 {
+            maxFall = 160
+        }
+        if mode == 1 {
+            ClimbBegin()
+        }
+        if mode == 2 {
+            DashBegin()
+        }
+    }
+
+    function Respawn() {
+        pos = spawnPoint
+        remainder = vec2(0, 0)
+        speed = vec2(0, 0)
+        dashes = maxDashes
+        stamina = 110
+        mode = 0
+        ducking = false
+        cancel dashing
+    }
+
+    // ---------------------------------------------------------------- hair
+
+    function BuildHair() {
+        for (i in 0 .. 4) {
+            line := await spawn(HairNode)
+            line.Appearance.Color = Rgb(0, 0, 0)
+            line.Appearance.Layer = 1
+            fill := await spawn(HairNode)
+            if i == 0 {
+                fill.Appearance.Layer = 4
+            }
+            hairLine = array_add(hairLine, line)
+            hairFill = array_add(hairFill, fill)
+            hairNodes = array_add(hairNodes, HairRoot())
+        }
+    }
+
+    function HairRoot() -> (root: CF_V2) {
+        if ducking {
+            return pos + vec2(0, -5)
+        }
+        return pos + vec2(0, -9)
+    }
+
+    function UpdateHair() {
+        count := length(hairNodes)
+        hairNodes[0] = HairRoot()
+        target := hairNodes[0] + vec2(-facing, 2)
+        prev := hairNodes[0]
+        for (i in 1 .. count - 1) {
+            step := (1 - cast<number>(i) / count * 0.5) * 64 * dt
+            node := MoveToward(hairNodes[i], target, step)
+            if distance(node, prev) > 3 {
+                node = prev + vec2_norm(node - prev) * 3
+            }
+            hairNodes[i] = node
+            target = node + vec2(-facing * 0.5, 2)
+            prev = node
+        }
+        UpdateHairColor()
+    }
+
+    function MoveToward(start: CF_V2, goal: CF_V2, step: double) -> (at: CF_V2) {
+        gap := distance(start, goal)
+        if gap <= step {
+            return goal
+        }
+        return start + (goal - start) * (step / gap)
+    }
+
+    function UpdateHairColor() {
+        if dashes == 0 && dashes < maxDashes {
+            blend := 6 * dt
+            hairR = mix(hairR, 68, blend)
+            hairG = mix(hairG, 183, blend)
+            hairB = mix(hairB, 255, blend)
+        } else {
+            if lastDashes != dashes {
+                hairFlashTimer = 0.12
+            }
+            hairR = 172
+            hairG = 50
+            hairB = 50
+            if hairFlashTimer > 0 {
+                hairFlashTimer -= dt
+                hairR = 255
+                hairG = 255
+                hairB = 255
+            }
+        }
+        lastDashes = dashes
+    }
+
+    function PresentHair() {
+        count := length(hairNodes)
+        color := Rgb(hairR, hairG, hairB)
+        for (i in 0 .. count - 1) {
+            size := (0.25 + (1 - cast<number>(i) / count) * 0.75) * 8
+            line := hairLine[i]
+            line.Transform = hairNodes[i]
+            line.Appearance.Width = size + 2
+            line.Appearance.Height = size + 2
+            fill := hairFill[i]
+            fill.Transform = hairNodes[i]
+            fill.Appearance.Width = size
+            fill.Appearance.Height = size
+            fill.Appearance.Color = color
+        }
+    }
+
+    // Packs 0-255 channels into the 0xRRGGBBAA an Appearance colour takes.
+    function Rgb(r: double, g: double, b: double) -> (color: uint) {
+        return cast<uint>(cast<int>(r) * 16777216 + cast<int>(g) * 65536 + cast<int>(b) * 256 + 255)
+    }
+
+    on Tick {
+        ReadInput()
+        jumpBuffer = max(0, jumpBuffer - dt)
+        dashBuffer = max(0, dashBuffer - dt)
+        if freezeTimer > 0 {
+            freezeTimer -= dt
+            Present()
+            return
+        }
+
+        onGround = speed.y >= 0 && OnGroundAt(pos.x, pos.y)
+        if wallSlideDir != 0 {
+            wallSlideTimer = max(wallSlideTimer - dt, 0)
+            wallSlideDir = 0
+        }
+        if wallBoostTimer > 0 {
+            wallBoostTimer -= dt
+            if moveX == wallBoostDir {
+                speed.x = 130 * moveX
+                stamina += 27.5
+                wallBoostTimer = 0
+            }
+        }
+        if onGround && mode != 1 {
+            autoJump = false
+            stamina = 110
+            wallSlideTimer = 1.2
+        }
+        if dashAttackTimer > 0 {
+            dashAttackTimer -= dt
+        }
+        if onGround {
+            jumpGraceTimer = 0.1
+        } else {
+            if jumpGraceTimer > 0 {
+                jumpGraceTimer -= dt
+            }
+        }
+        if dashCooldownTimer > 0 {
+            dashCooldownTimer -= dt
+        }
+        if dashRefillCooldownTimer > 0 {
+            dashRefillCooldownTimer -= dt
+        } else {
+            if onGround {
+                dashes = maxDashes
+            }
+        }
+        if varJumpTimer > 0 {
+            varJumpTimer -= dt
+        }
+        if autoJumpTimer > 0 {
+            if autoJump {
+                autoJumpTimer -= dt
+                if autoJumpTimer <= 0 {
+                    autoJump = false
+                }
+            } else {
+                autoJumpTimer = 0
+            }
+        }
+        if forceMoveXTimer > 0 {
+            forceMoveXTimer -= dt
+            moveX = forceMoveX
+        }
+        if moveX != 0 && mode != 1 {
+            facing = moveX
+        }
+        if wallSpeedRetentionTimer > 0 {
+            if sign(speed.x) == -sign(wallSpeedRetained) {
+                wallSpeedRetentionTimer = 0
+            } else {
+                if !CollideAt(pos.x + sign(wallSpeedRetained), pos.y) {
+                    speed.x = wallSpeedRetained
+                    wallSpeedRetentionTimer = 0
+                } else {
+                    wallSpeedRetentionTimer -= dt
+                }
+            }
+        }
+        if hopWaitX != 0 {
+            if sign(speed.x) == -hopWaitX || speed.y > 0 {
+                hopWaitX = 0
+            } else {
+                if !CollideAt(pos.x + hopWaitX, pos.y) {
+                    speed.x = hopWaitXSpeed
+                    hopWaitX = 0
+                }
+            }
+        }
+
+        next := mode
+        if mode == 0 {
+            next = NormalUpdate()
+        } else {
+            if mode == 1 {
+                next = ClimbUpdate()
+            } else {
+                next = DashUpdate()
+            }
+        }
+        SetMode(next)
+
+        if speed.y > 0 && CanUnDuck() && !onGround {
+            ducking = false
+        }
+        MoveH(speed.x * dt)
+        MoveV(speed.y * dt)
+        if pos.y > rows * 8 + 16 {
+            Respawn()
+        }
+        wasOnGround = onGround
+        UpdateHair()
+        Present()
+    }
+
+    function Present() {
+        height := 11
+        if ducking {
+            height = 6
+        }
+        self.Transform = vec2(pos.x, pos.y - height / 2)
+        self.Appearance.Height = height
+        PresentHair()
+    }
+}

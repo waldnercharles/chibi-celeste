@@ -1,0 +1,25 @@
+version 1
+name "Level"
+(array)entities {
+    - name="Lighting" prototype="Lighting"
+    - name="Backdrop" prototype="Backdrop"
+    - {
+        name "Player"
+        prototype "Player"
+        (array)behaviors "Player"
+    }
+    - {
+        name "Camera"
+        prototype "Camera"
+        (array)behaviors "CameraFollow"
+    }
+    - name="JumpKey" prototype="JumpKey"
+    - name="JumpKeyC" prototype="JumpKeyC"
+    - name="JumpPad" prototype="JumpPad"
+    - name="DashKey" prototype="DashKey"
+    - name="DashKeyK" prototype="DashKeyK"
+    - name="DashPad" prototype="DashPad"
+    - name="GrabKey" prototype="GrabKey"
+    - name="GrabKeyL" prototype="GrabKeyL"
+    - name="GrabPad" prototype="GrabPad"
+}

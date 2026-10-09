@@ -1,0 +1,20 @@
+// Celeste's camera: centre on the player, clamp to the room, ease in.
+behavior CameraFollow {
+    player: entity = null
+
+    on Begin {
+        player = get_global_variable("Player")
+        self.Transform = Target()
+    }
+
+    function Target() -> (target: CF_V2) {
+        width := Room.Columns() * 8
+        height := Room.Rows() * 8
+        at := player.Transform
+        return vec2(clamp(at.x, 160, width - 160), clamp(at.y, 90, height - 90))
+    }
+
+    on Tick {
+        self.Transform += (Target() - self.Transform) * (1 - pow(0.01, dt))
+    }
+}
