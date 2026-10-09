@@ -23,8 +23,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # The engine commit the site is built with. Bump it to pick up engine changes.
-  CHIBI_REF: claude/project-thread-m190qi
+  # The engine ref the site is built with. Set a commit to pin one.
+  CHIBI_REF: main
   EMSDK_VERSION: 6.0.10
 
 jobs:
