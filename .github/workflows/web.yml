@@ -1,0 +1,86 @@
+# Builds this game for browsers with `chibi export --web` and publishes it on
+# GitHub Pages. Any Chibi game repository can copy this file unchanged.
+#
+# Setup, once per repository:
+# - Settings > Pages > Source: GitHub Actions.
+# - Settings > Secrets > Actions: CHIBI_ENGINE_TOKEN, a fine-grained token with
+#   read-only Contents access to waldnercharles/chibi, which is private.
+#
+# Pull requests build the site and keep it as an artifact; only main publishes.
+name: Web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The engine ref the site is built with. Set a commit to pin one.
+  CHIBI_REF: main
+  EMSDK_VERSION: 6.0.10
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      CC: clang-18
+      CXX: clang++-18
+      LIBCLANG_ROOT: /usr/lib/llvm-18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: game
+      - uses: actions/checkout@v4
+        with:
+          repository: waldnercharles/chibi
+          ref: ${{ env.CHIBI_REF }}
+          token: ${{ secrets.CHIBI_ENGINE_TOKEN }}
+          path: chibi
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-18 libclang-18-dev libclang-rt-18-dev \
+            libgl1-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxrandr-dev \
+            libxss-dev libxtst-dev libwayland-dev libxkbcommon-dev libasound2-dev libpulse-dev
+          pip install 'cmake>=4.2'
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ env.EMSDK_VERSION }}
+          actions-cache-folder: emsdk-cache
+      - name: Cache engine dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/chibi-dependency-packages
+            ~/.cache/chibi-fetchcontent
+          key: chibi-deps-${{ runner.os }}-${{ env.EMSDK_VERSION }}-${{ hashFiles('chibi/cmake/**', 'chibi/tools/dependency_package.py', 'chibi/tools/fetchcontent_cache.py') }}
+      - name: Build the SDK and the browser player
+        working-directory: chibi
+        run: make package-sdk package-web-player
+      - name: Export the site
+        run: chibi/dist/sdk/bin/chibi export game --web chibi/dist/web-player --output site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
