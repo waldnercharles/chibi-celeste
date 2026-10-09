@@ -1,0 +1,9 @@
+Jump {
+    (array)sources "Space" "C" "Pad A"
+}
+Dash {
+    (array)sources "K" "X" "Pad X"
+}
+Grab {
+    (array)sources "L" "Z" "Pad Right Shoulder"
+}
