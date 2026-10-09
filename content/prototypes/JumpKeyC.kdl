@@ -1,5 +1,0 @@
-name "JumpKeyC"
-components {
-    GAME.GameActionBinding action="Jump" source="C"
-    GAME.GameGlobalBinding name="JumpKeyC"
-}

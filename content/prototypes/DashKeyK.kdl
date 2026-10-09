@@ -1,5 +1,0 @@
-name "DashKeyK"
-components {
-    GAME.GameActionBinding action="Dash" source="K"
-    GAME.GameGlobalBinding name="DashKeyK"
-}

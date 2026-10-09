@@ -7,10 +7,6 @@ behavior Player {
     rows := 0
     spawnPoint := vec2(0, 0)
 
-    // Each binding entity holds one source, so every action reads several.
-    jumpKeys: entity[]
-    dashKeys: entity[]
-    grabKeys: entity[]
     pos := vec2(0, 0)
     remainder := vec2(0, 0)
     speed := vec2(0, 0)
@@ -79,9 +75,6 @@ behavior Player {
         columns = Room.Columns()
         rows = Room.Rows()
         spawnPoint = Room.Start()
-        jumpKeys = [get_global_variable("JumpKey"), get_global_variable("JumpKeyC"), get_global_variable("JumpPad")]
-        dashKeys = [get_global_variable("DashKey"), get_global_variable("DashKeyK"), get_global_variable("DashPad")]
-        grabKeys = [get_global_variable("GrabKey"), get_global_variable("GrabKeyL"), get_global_variable("GrabPad")]
         await BuildRoom()
         Respawn()
         await BuildHair()
@@ -345,12 +338,12 @@ behavior Player {
         if move.y < -0.3 {
             moveY = -1
         }
-        jump := Held(jumpKeys)
+        jump := input.Jump.held
         if jump && !jumpHeld {
             jumpBuffer = 0.08
         }
         jumpHeld = jump
-        dash := Held(dashKeys)
+        dash := input.Dash.held
         if dash && !dashHeld {
             dashBuffer = 0.08
         }
@@ -358,16 +351,7 @@ behavior Player {
     }
 
     function GrabHeld() {
-        return Held(grabKeys)
-    }
-
-    function Held(keys: entity[]) {
-        foreach (key in keys) {
-            if key.ActionBinding.Pressed {
-                return true
-            }
-        }
-        return false
+        return input.Grab.held
     }
 
     function JumpPressed() {

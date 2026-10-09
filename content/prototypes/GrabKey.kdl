@@ -1,5 +1,0 @@
-name "GrabKey"
-components {
-    GAME.GameActionBinding action="Grab" source="Z"
-    GAME.GameGlobalBinding name="GrabKey"
-}

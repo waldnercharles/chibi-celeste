@@ -20,4 +20,5 @@ Madeline's movement from Celeste, ported to Chibi script. Everything game-specif
 | Dash | X or K | X |
 | Grab | Z or L | Right shoulder |
 
+`content/input.kdl` binds Jump, Dash and Grab, and `Player.chibi` reads them as `input.Jump.held`.
 Arrow keys are not movement sources in the engine yet.
