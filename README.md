@@ -32,8 +32,3 @@ is public, so none are copied here.
   hair is simulated separately and drawn behind it.
 - `images/tiles.png` has sixteen 8x8 autotile frames. A tile's frame is the set of its open sides:
   1 above (snow), 2 left, 4 right and 8 below.
-
-## Engine
-
-This needs coroutine tasks (#197), the script fixes and `GameSprite` component in #208, and the
-int-to-float fix in #206.
