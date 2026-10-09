@@ -1,12 +1,7 @@
-# Builds this game for browsers with `chibi export --web` and publishes it on
-# GitHub Pages. Any Chibi game repository can copy this file unchanged.
-#
-# Setup, once per repository:
-# - Settings > Pages > Source: GitHub Actions.
-# - Settings > Secrets > Actions: CHIBI_ENGINE_TOKEN, a fine-grained token with
-#   read-only Contents access to waldnercharles/chibi, which is private.
-#
-# Pull requests build the site and keep it as an artifact; only main publishes.
+# Copy this workflow to another Chibi game. It consumes published engine/editor
+# packages; game repositories never compile the engine or Studio.
+# Enable GitHub Actions Pages and set CHIBI_ENGINE_TOKEN with read-only Contents
+# access to waldnercharles/chibi. project.kdl and content/ are the source snapshot.
 name: Web
 
 on:
@@ -23,6 +18,8 @@ on:
       - 'project.kdl'
       - '.github/workflows/web.yml'
   workflow_dispatch:
+  schedule:
+    - cron: '37 7 * * *'
 
 permissions:
   contents: read
@@ -32,97 +29,149 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # The engine ref the site is built with. Set a commit to pin one.
-  CHIBI_REF: main
-  EMSDK_VERSION: 6.0.10
+  STUDIO_URL: https://waldnercharles.github.io/chibi-studio/
+  ENGINE_REPOSITORY: waldnercharles/chibi
 
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    env:
-      CC: clang-18
-      CXX: clang++-18
-      LIBCLANG_ROOT: /usr/lib/llvm-18
+    timeout-minutes: 10
+    outputs:
+      changed: ${{ steps.packages.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
         with:
           path: game
-      - uses: actions/checkout@v4
-        id: engine
-        with:
-          repository: waldnercharles/chibi
-          ref: ${{ env.CHIBI_REF }}
-          token: ${{ secrets.CHIBI_ENGINE_TOKEN }}
-          path: chibi
-      # Export only needs the CLI, engine resources, and browser player/compiler.
-      # Do not cache the SDK's static libraries or intermediate build trees.
-      - name: Restore export tools
-        id: export-tools
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            chibi/dist/sdk/bin/chibi
-            chibi/dist/sdk/share/chibi
-            chibi/dist/web-player
-          key: chibi-export-v1-ubuntu-24.04-${{ runner.arch }}-${{ env.EMSDK_VERSION }}-${{ steps.engine.outputs.commit }}
-      - name: Install build dependencies
-        if: steps.export-tools.outputs.cache-hit != 'true'
+      - name: Resolve published packages
+        id: packages
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REVISION: ${{ github.sha }}
+          EVENT: ${{ github.event_name }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build clang-18 libclang-18-dev libclang-rt-18-dev \
-            libgl1-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxrandr-dev \
-            libxss-dev libxtst-dev libwayland-dev libxkbcommon-dev libasound2-dev libpulse-dev
-          pip install 'cmake>=4.2'
-      - uses: mymindstorm/setup-emsdk@v14
-        if: steps.export-tools.outputs.cache-hit != 'true'
-        with:
-          version: ${{ env.EMSDK_VERSION }}
-          actions-cache-folder: emsdk-cache
-      - name: Restore engine dependencies
-        id: dependencies
-        if: steps.export-tools.outputs.cache-hit != 'true'
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.cache/chibi-dependency-packages
-            ~/.cache/chibi-fetchcontent
-          key: chibi-deps-${{ runner.os }}-${{ env.EMSDK_VERSION }}-${{ hashFiles('chibi/cmake/**', 'chibi/tools/dependency_package.py', 'chibi/tools/fetchcontent_cache.py') }}
-      - name: Build the SDK and the browser player
-        if: steps.export-tools.outputs.cache-hit != 'true'
-        working-directory: chibi
-        run: make package-sdk package-web-player
-      - name: Set up export runtime
-        uses: actions/setup-node@v4
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re, shutil, urllib.error, urllib.parse, urllib.request
+          packages = pathlib.Path('packages')
+          packages.mkdir()
+          def fetch(url):
+              return urllib.request.urlopen(url, timeout=30)
+          for attempt in range(3):
+              with fetch(os.environ['STUDIO_URL'] + 'studio.json') as response:
+                  manifest = json.load(response)
+              if (manifest.get('format') != 1 or
+                  any(not re.fullmatch('[0-9a-f]{40}', manifest.get(key, '')) for key in ('engine', 'studio')) or
+                  not re.fullmatch('[0-9a-f]{64}', manifest.get('sha256', '')) or
+                  not re.fullmatch('[A-Za-z0-9_.-]+\.tar\.gz', manifest.get('archive', ''))):
+                  raise SystemExit('Invalid Studio package manifest')
+              identity = dict(format=1, game=os.environ['REVISION'], engine=manifest['engine'], studio=manifest['studio'])
+              changed = True
+              if os.environ['EVENT'] == 'schedule':
+                  owner, repository = os.environ['REPOSITORY'].split('/')
+                  try:
+                      with fetch(f'https://{owner}.github.io/{repository}/build.json') as response:
+                          changed = json.load(response) != identity
+                  except urllib.error.HTTPError as error:
+                      if error.code != 404:
+                          raise
+              if changed:
+                  try:
+                      with fetch(urllib.parse.urljoin(os.environ['STUDIO_URL'], manifest['archive'])) as response, (packages / 'editor.tar.gz').open('wb') as output:
+                          shutil.copyfileobj(response, output)
+                  except urllib.error.HTTPError as error:
+                      # A Pages deployment may replace its archive between requests.
+                      if error.code == 404 and attempt < 2:
+                          continue
+                      raise
+                  with (packages / 'editor.tar.gz').open('rb') as archive:
+                      checksum = hashlib.file_digest(archive, 'sha256').hexdigest()
+                  if checksum != manifest['sha256']:
+                      if attempt < 2:
+                          continue
+                      raise SystemExit('Studio package checksum mismatch')
+              (packages / 'build.json').write_text(json.dumps(identity) + '\n')
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+                  print(f"engine={manifest['engine']}", file=output)
+                  print(f'changed={str(changed).lower()}', file=output)
+              break
+          PY
+      - name: Download matching export tools
+        if: steps.packages.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.CHIBI_ENGINE_TOKEN }}
+          ENGINE: ${{ steps.packages.outputs.engine }}
+        run: |
+          gh release download "engine-${ENGINE}" --repo "$ENGINE_REPOSITORY" --dir packages \
+            --pattern chibi-export-linux-x64.tar.gz --pattern SHA256SUMS
+          python3 - <<'PY'
+          import hashlib, pathlib
+          packages = pathlib.Path('packages')
+          name = 'chibi-export-linux-x64.tar.gz'
+          matches = [line.split() for line in (packages / 'SHA256SUMS').read_text().splitlines()
+                     if len(line.split()) == 2 and line.split()[1] == name]
+          if len(matches) != 1:
+              raise SystemExit('Expected exactly one export package checksum')
+          with (packages / name).open('rb') as archive:
+              actual = hashlib.file_digest(archive, 'sha256').hexdigest()
+          if actual != matches[0][0]:
+              raise SystemExit('Export package checksum mismatch')
+          PY
+          mkdir chibi
+          tar -xzf packages/chibi-export-linux-x64.tar.gz -C chibi
+      - uses: actions/setup-node@v4
+        if: steps.packages.outputs.changed == 'true'
         with:
           node-version: '22'
-      - name: Export the site
-        run: chibi/dist/sdk/bin/chibi export game --web chibi/dist/web-player --output site
-      - name: Save export tools
-        if: steps.export-tools.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            chibi/dist/sdk/bin/chibi
-            chibi/dist/sdk/share/chibi
-            chibi/dist/web-player
-          key: ${{ steps.export-tools.outputs.cache-primary-key }}
-      - name: Save engine dependencies
-        if: steps.export-tools.outputs.cache-hit != 'true' && steps.dependencies.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            ~/.cache/chibi-dependency-packages
-            ~/.cache/chibi-fetchcontent
-          key: ${{ steps.dependencies.outputs.cache-primary-key }}
+      - name: Export player and assemble editor
+        if: steps.packages.outputs.changed == 'true'
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REVISION: ${{ github.sha }}
+        run: |
+          chibi/sdk/bin/chibi export game --web chibi/web-player --output site
+          mkdir site/dev
+          tar -xzf packages/editor.tar.gz -C site/dev
+          git -C game archive --format=zip HEAD project.kdl content > site/dev/project.zip
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          site = pathlib.Path('site')
+          archive = site / 'dev/project.zip'
+          with archive.open('rb') as source:
+              checksum = hashlib.file_digest(source, 'sha256').hexdigest()
+          manifest = dict(format=1, id=os.environ['REPOSITORY'].split('/')[-1], revision=os.environ['REVISION'], archive='project.zip', sha256=checksum)
+          (site / 'dev/project.json').write_text(json.dumps(manifest) + '\n')
+          editor = (site / 'dev/chibi-studio.html').read_text()
+          marker = '<script src="chibi-default.js"></script>'
+          # Studio's CMake shell places this after the inline Module definition.
+          insertion = editor.find(marker)
+          if editor.count(marker) != 1 or 'var Module =' not in editor[:insertion]:
+              raise SystemExit('Studio HTML has no supported serial startup script')
+          editor = editor[:insertion] + "<script>Module['chibiPublishedProject'] = 'project.json';</script>\n" + editor[insertion:]
+          (site / 'dev/index.html').write_text(editor)
+          player = site / 'index.html'
+          page = player.read_text()
+          if '<head>' not in page:
+              raise SystemExit('Player HTML has no head')
+          redirect = """<script>
+          if (new URLSearchParams(location.search).has('dev')) {
+            const url = new URL('dev/', location.href);
+            url.search = location.search;
+            url.searchParams.delete('dev');
+            url.hash = location.hash;
+            location.replace(url);
+          }
+          </script>"""
+          player.write_text(page.replace('<head>', '<head>\n' + redirect, 1))
+          (site / 'build.json').write_bytes(pathlib.Path('packages/build.json').read_bytes())
+          PY
       - uses: actions/upload-pages-artifact@v3
+        if: steps.packages.outputs.changed == 'true'
         with:
           path: site
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.build.outputs.changed == 'true'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       pages: write
