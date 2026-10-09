@@ -1,8 +1,16 @@
 version 1
 name "Level"
 (array)entities {
-    - name="Lighting" prototype="Lighting"
-    - name="Backdrop" prototype="Backdrop"
+    - {
+        name "Lighting"
+        prototype "Lighting"
+        (array)behaviors
+    }
+    - {
+        name "Backdrop"
+        prototype "Backdrop"
+        (array)behaviors
+    }
     - {
         name "Player"
         prototype "Player"
@@ -13,13 +21,49 @@ name "Level"
         prototype "Camera"
         (array)behaviors "CameraFollow"
     }
-    - name="JumpKey" prototype="JumpKey"
-    - name="JumpKeyC" prototype="JumpKeyC"
-    - name="JumpPad" prototype="JumpPad"
-    - name="DashKey" prototype="DashKey"
-    - name="DashKeyK" prototype="DashKeyK"
-    - name="DashPad" prototype="DashPad"
-    - name="GrabKey" prototype="GrabKey"
-    - name="GrabKeyL" prototype="GrabKeyL"
-    - name="GrabPad" prototype="GrabPad"
+    - {
+        name "JumpKey"
+        prototype "JumpKey"
+        (array)behaviors
+    }
+    - {
+        name "JumpKeyC"
+        prototype "JumpKeyC"
+        (array)behaviors
+    }
+    - {
+        name "JumpPad"
+        prototype "JumpPad"
+        (array)behaviors
+    }
+    - {
+        name "DashKey"
+        prototype "DashKey"
+        (array)behaviors
+    }
+    - {
+        name "DashKeyK"
+        prototype "DashKeyK"
+        (array)behaviors
+    }
+    - {
+        name "DashPad"
+        prototype "DashPad"
+        (array)behaviors
+    }
+    - {
+        name "GrabKey"
+        prototype "GrabKey"
+        (array)behaviors
+    }
+    - {
+        name "GrabKeyL"
+        prototype "GrabKeyL"
+        (array)behaviors
+    }
+    - {
+        name "GrabPad"
+        prototype "GrabPad"
+        (array)behaviors
+    }
 }
