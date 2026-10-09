@@ -132,7 +132,7 @@ jobs:
           tar -xzf packages/editor.tar.gz -C site/dev
           git -C game archive --format=zip HEAD project.kdl content > site/dev/project.zip
           python3 - <<'PY'
-          import hashlib, json, os, pathlib
+          import hashlib, json, os, pathlib, re
           site = pathlib.Path('site')
           archive = site / 'dev/project.zip'
           with archive.open('rb') as source:
@@ -140,11 +140,11 @@ jobs:
           manifest = dict(format=1, id=os.environ['REPOSITORY'].split('/')[-1], revision=os.environ['REVISION'], archive='project.zip', sha256=checksum)
           (site / 'dev/project.json').write_text(json.dumps(manifest) + '\n')
           editor = (site / 'dev/chibi-studio.html').read_text()
-          marker = '<script src="chibi-default.js"></script>'
-          # Studio's CMake shell places this after the inline Module definition.
-          insertion = editor.find(marker)
-          if editor.count(marker) != 1 or 'var Module =' not in editor[:insertion]:
+          # Emscripten may minify HTML attribute quotes and declaration spacing.
+          scripts = list(re.finditer(r'<script\b[^>]*\bsrc\s*=\s*[\"\']?chibi-default\.js[\"\']?(?=[\s>])[^>]*>\s*</script\s*>', editor))
+          if len(scripts) != 1 or not re.search(r'\bvar\s+Module\s*=', editor[:scripts[0].start()]):
               raise SystemExit('Studio HTML has no supported serial startup script')
+          insertion = scripts[0].start()
           editor = editor[:insertion] + "<script>Module['chibiPublishedProject'] = 'project.json';</script>\n" + editor[insertion:]
           (site / 'dev/index.html').write_text(editor)
           player = site / 'index.html'
