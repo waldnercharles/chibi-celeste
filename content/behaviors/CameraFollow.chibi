@@ -1,16 +1,19 @@
 // Celeste's camera: centre on the player, clamp to the room, ease in.
 behavior CameraFollow {
     player: entity
+    level: entity
     on Begin {
         player = get_global_variable("Player")
+        level = get_global_variable("Level")
         self.Transform = Target()
     }
 
     function Target() {
-        width := Room.Columns() * 8
-        height := Room.Rows() * 8
-        at := player.Transform
-        return vec2(clamp(at.x, 160, width - 160), clamp(at.y, 90, height - 90))
+        width := level.Tilemap.Columns * level.Tilemap.FrameWidth
+        height := level.Tilemap.Rows * level.Tilemap.FrameHeight
+        origin := level.Transform
+        at := player.Transform - origin
+        return origin + vec2(clamp(at.x, 160, width - 160), clamp(at.y, 90, height - 90))
     }
 
     on Tick {

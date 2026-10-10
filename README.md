@@ -1,7 +1,7 @@
 # Celeste Movement
 
 Madeline's movement from Celeste, ported to Chibi script. Everything game-specific lives in
-`content/`: the engine supplies only input, transforms, shapes and sprites.
+`content/`: the engine supplies input, transforms, shapes, sprites and tilemaps.
 
 - `behaviors/Player.chibi` ports the Normal, Climb and Dash states from
   [NoelFB/Celeste `Player.cs`](https://github.com/NoelFB/Celeste/blob/master/Source/Player/Player.cs):
@@ -9,10 +9,10 @@ Madeline's movement from Celeste, ported to Chibi script. Everything game-specif
   stamina, 8-way dash with freeze frames, super, hyper and wall-bounce jumps, corner correction and
   ducking. It also simulates Madeline's hair (after `PlayerHair`), which turns blue with no dash left.
 - `behaviors/CameraFollow.chibi` eases the camera toward the player inside the room bounds.
-- `scenes/Level.kdl` contains the 64×23 test room as editable Tile entities.
-  Player collision reads these authored tiles when Play starts; moving or removing
-  tiles changes the playable level. Collision follows their exact positions.
-  `libraries/Room.chibi` supplies the room bounds.
+- `scenes/Level.kdl` contains one Room tilemap layer. Its 64×23 grid is authored in
+  `prototypes/Room.kdl`: frame indices select tiles from `tiles.png`, and `-1` is
+  empty. Rendering and player collision read the same grid. The layer supplies
+  the room dimensions and position; it does not spawn individual tile entities.
 
 ## Controls
 

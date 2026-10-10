@@ -2,9 +2,10 @@
 // states). Units are pixels and seconds; +y is down. `pos` is the feet: the
 // bottom centre of the 8x11 hitbox.
 behavior Player {
-    tiles: entity[]
-    columns := 0
-    rows := 0
+    level: entity
+    roomOrigin := vec2(0, 0)
+    roomWidth := 0
+    roomHeight := 0
     spawnPoint := vec2(0, 0)
 
     pos := vec2(0, 0)
@@ -71,10 +72,11 @@ behavior Player {
     ready := false
 
     on Begin {
-        columns = Room.Columns()
-        rows = Room.Rows()
+        level = get_global_variable("Level")
+        roomOrigin = level.Transform
+        roomWidth = level.Tilemap.Columns * level.Tilemap.FrameWidth
+        roomHeight = level.Tilemap.Rows * level.Tilemap.FrameHeight
         spawnPoint = self.Transform + vec2(0, 8)
-        tiles = find_entities_with_component("SolidTile")
         Respawn()
         await BuildHair()
         ready = true
@@ -83,19 +85,13 @@ behavior Player {
     // ---------------------------------------------------------------- room
 
     function SolidAt(x: double, y: double) {
-        if x < 0 || x >= columns * 8 || y < 0 {
+        if x < roomOrigin.x || x >= roomOrigin.x + roomWidth || y < roomOrigin.y {
             return true
         }
-        if y >= rows * 8 {
+        if y >= roomOrigin.y + roomHeight {
             return false
         }
-        return count_matching_entities(tiles, [
-            { component: "SolidTile", field: "enabled", test: "==", value: 1 },
-            { component: "GAME.GameTransform", field: "x", test: "<=", value: x + 4 },
-            { component: "GAME.GameTransform", field: "x", test: ">", value: x - 4 },
-            { component: "GAME.GameTransform", field: "y", test: "<=", value: y + 4 },
-            { component: "GAME.GameTransform", field: "y", test: ">", value: y - 4 }
-        ]) > 0
+        return tilemap_frame_at(level, vec2(x, y)) >= 0
     }
 
     // Does the hitbox overlap a solid with its feet at (x, y)?
@@ -107,21 +103,18 @@ behavior Player {
         return BoxSolid(x - 4, y - height, x + 4, y)
     }
 
-    // Exact authored rectangles keep collision aligned when tiles move in Studio.
     function BoxSolid(left: double, top: double, right: double, bottom: double) {
-        if left < 0 || right > columns * 8 || top < 0 {
+        if left < roomOrigin.x || right > roomOrigin.x + roomWidth || top < roomOrigin.y {
             return true
         }
-        if top >= rows * 8 {
+        if top >= roomOrigin.y + roomHeight {
             return false
         }
-        return count_matching_entities(tiles, [
-            { component: "SolidTile", field: "enabled", test: "==", value: 1 },
-            { component: "GAME.GameTransform", field: "x", test: ">", value: left - 4 },
-            { component: "GAME.GameTransform", field: "x", test: "<", value: right + 4 },
-            { component: "GAME.GameTransform", field: "y", test: ">", value: top - 4 },
-            { component: "GAME.GameTransform", field: "y", test: "<", value: min(bottom, rows * 8) + 4 }
-        ]) > 0
+        return tilemap_occupied_in_box(
+            level,
+            vec2(left, top),
+            vec2(right, min(bottom, roomOrigin.y + roomHeight))
+        ) > 0
     }
 
     function CanUnDuckAt(x: double, y: double) {
@@ -990,7 +983,7 @@ behavior Player {
         }
         MoveH(speed.x * dt)
         MoveV(speed.y * dt)
-        if pos.y > rows * 8 + 16 {
+        if pos.y > roomOrigin.y + roomHeight + 16 {
             Respawn()
         }
         wasOnGround = onGround
