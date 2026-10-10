@@ -22,3 +22,17 @@ Madeline's movement from Celeste, ported to Chibi script. Everything game-specif
 
 `content/input.kdl` binds Jump, Dash and Grab, and `Player.chibi` reads them as `input.Jump.held`.
 Arrow keys are not movement sources in the engine yet.
+
+## Play and edit in the browser
+
+[Play Celeste](https://waldnercharles.github.io/chibi-celeste/) or
+[open it in Chibi Studio](https://waldnercharles.github.io/chibi-celeste/dev/).
+Adding `?dev` to the player URL also opens the editor.
+
+The editor starts from the published source snapshot. Browser edits stay in this
+browser's local storage; export a project ZIP from Studio to keep a separate copy.
+A new published source revision opens a new workspace and preserves earlier edits.
+
+The Web workflow exports game content with published engine tools and copies a
+published Studio bundle into `/dev/`. It publishes main automatically; pull requests
+produce a downloadable site artifact. Neither path recompiles the engine or editor.
