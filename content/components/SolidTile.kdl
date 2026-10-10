@@ -1,0 +1,5 @@
+name "SolidTile"
+description "An authored room tile used by player collision."
+(array)fields {
+    - name="enabled" type="bool"
+}

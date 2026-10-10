@@ -2,7 +2,7 @@
 // states). Units are pixels and seconds; +y is down. `pos` is the feet: the
 // bottom centre of the 8x11 hitbox.
 behavior Player {
-    tiles: number[]
+    tiles: entity[]
     columns := 0
     rows := 0
     spawnPoint := vec2(0, 0)
@@ -71,11 +71,10 @@ behavior Player {
     ready := false
 
     on Begin {
-        tiles = Room.Tiles()
         columns = Room.Columns()
         rows = Room.Rows()
-        spawnPoint = Room.Start()
-        await BuildRoom()
+        spawnPoint = self.Transform + vec2(0, 8)
+        tiles = find_entities_with_component("SolidTile")
         Respawn()
         await BuildHair()
         ready = true
@@ -83,54 +82,20 @@ behavior Player {
 
     // ---------------------------------------------------------------- room
 
-    function BuildRoom() {
-        for (y in 0..rows - 1) {
-            for (x in 0..columns - 1) {
-                if TileSolid(x, y) {
-                    tile := await spawn(Tile)
-                    tile.Transform = vec2(x * 8 + 4, y * 8 + 4)
-                    tile.Sprite.Frame = TileEdges(x, y)
-                }
-            }
-        }
-    }
-
-    // The tiles.png frame for a tile: 1 open above, 2 left, 4 right, 8 below.
-    function TileEdges(x: int, y: int) {
-        edges := 0
-        if !TileSolid(x, y - 1) {
-            edges += 1
-        }
-        if !TileSolid(x - 1, y) {
-            edges += 2
-        }
-        if !TileSolid(x + 1, y) {
-            edges += 4
-        }
-        if !TileSolid(x, y + 1) {
-            edges += 8
-        }
-        return edges
-    }
-
-    // Outside the room counts as solid, so its border shows no edges.
-    function TileSolid(x: int, y: int) {
-        if x < 0 || x >= columns || y < 0 || y >= rows {
-            return true
-        }
-        return tiles[y * columns + x] != 0
-    }
-
     function SolidAt(x: double, y: double) {
-        tx := cast<int>(floor(x / 8))
-        ty := cast<int>(floor(y / 8))
-        if tx < 0 || tx >= columns || ty < 0 {
+        if x < 0 || x >= columns * 8 || y < 0 {
             return true
         }
-        if ty >= rows {
+        if y >= rows * 8 {
             return false
         }
-        return tiles[ty * columns + tx] != 0
+        return count_matching_entities(tiles, [
+            { component: "SolidTile", field: "enabled", test: "==", value: 1 },
+            { component: "GAME.GameTransform", field: "x", test: "<=", value: x + 4 },
+            { component: "GAME.GameTransform", field: "x", test: ">", value: x - 4 },
+            { component: "GAME.GameTransform", field: "y", test: "<=", value: y + 4 },
+            { component: "GAME.GameTransform", field: "y", test: ">", value: y - 4 }
+        ]) > 0
     }
 
     // Does the hitbox overlap a solid with its feet at (x, y)?
@@ -142,19 +107,21 @@ behavior Player {
         return BoxSolid(x - 4, y - height, x + 4, y)
     }
 
+    // Exact authored rectangles keep collision aligned when tiles move in Studio.
     function BoxSolid(left: double, top: double, right: double, bottom: double) {
-        ty := floor(top / 8) * 8
-        while ty < bottom {
-            tx := floor(left / 8) * 8
-            while tx < right {
-                if SolidAt(tx, ty) {
-                    return true
-                }
-                tx += 8
-            }
-            ty += 8
+        if left < 0 || right > columns * 8 || top < 0 {
+            return true
         }
-        return false
+        if top >= rows * 8 {
+            return false
+        }
+        return count_matching_entities(tiles, [
+            { component: "SolidTile", field: "enabled", test: "==", value: 1 },
+            { component: "GAME.GameTransform", field: "x", test: ">", value: left - 4 },
+            { component: "GAME.GameTransform", field: "x", test: "<", value: right + 4 },
+            { component: "GAME.GameTransform", field: "y", test: ">", value: top - 4 },
+            { component: "GAME.GameTransform", field: "y", test: "<", value: min(bottom, rows * 8) + 4 }
+        ]) > 0
     }
 
     function CanUnDuckAt(x: double, y: double) {
