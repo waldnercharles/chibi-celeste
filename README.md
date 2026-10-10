@@ -9,7 +9,10 @@ Madeline's movement from Celeste, ported to Chibi script. Everything game-specif
   stamina, 8-way dash with freeze frames, super, hyper and wall-bounce jumps, corner correction and
   ducking. It also simulates Madeline's hair (after `PlayerHair`), which turns blue with no dash left.
 - `behaviors/CameraFollow.chibi` eases the camera toward the player inside the room bounds.
-- `libraries/Room.chibi` is the 64x23 test room, generated from an ASCII map.
+- `scenes/Level.kdl` contains the 64×23 test room as editable Tile entities.
+  Player collision reads these authored tiles when Play starts; moving or removing
+  tiles changes the playable level. Collision follows their exact positions.
+  `libraries/Room.chibi` supplies the room bounds.
 
 ## Controls
 

@@ -3,6 +3,1858 @@ name "Level"
 (array)entities {
     - name="Lighting" prototype="Lighting"
     - name="Backdrop" prototype="Backdrop"
-    - name="Player" prototype="Player"
-    - name="Camera" prototype="Camera"
+    - {
+        name "Player"
+        prototype "Player"
+        components {
+            GAME.GameTransform x=20.0 y=152.0
+        }
+    }
+    - {
+        name "Camera"
+        prototype "Camera"
+        components {
+            GAME.GameTransform x=160.0 y=94.0
+        }
+    }
+    - {
+        name "Tile 0,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=4.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 1,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=12.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 2,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=20.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 3,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=28.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 4,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=36.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 5,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=44.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 6,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=52.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 7,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=60.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 8,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=68.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 9,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=76.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 10,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=84.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 11,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=92.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 12,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=100.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 13,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=108.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 14,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=116.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 15,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=124.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 16,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=132.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 17,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=140.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 18,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=148.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 19,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=156.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 20,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=164.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 21,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=172.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 22,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=180.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 23,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=188.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 24,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=196.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 25,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=204.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 26,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=212.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 27,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=220.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 28,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=228.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 29,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=236.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 30,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=244.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 31,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=252.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 32,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=260.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 33,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=268.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 34,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=276.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 35,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=284.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 36,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=292.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 37,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=300.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 38,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 39,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=316.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 40,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=324.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 41,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=332.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 42,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=340.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 43,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=348.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 44,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=356.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 45,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=364.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 46,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 47,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=380.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 48,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=388.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 49,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=396.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 50,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=404.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 51,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=412.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 52,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 53,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=428.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 54,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=436.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 55,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=444.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 56,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 57,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=460.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 58,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=468.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 59,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=476.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 60,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=484.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 61,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=492.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 62,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=500.0 y=4.0
+            GAME.GameSprite frame=8
+        }
+    }
+    - {
+        name "Tile 63,0"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=4.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 0,1"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=12.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,1"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=12.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,2"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=20.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,2"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=20.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,3"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=28.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,3"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=28.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,4"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=36.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,4"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=36.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,5"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=44.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 56,5"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=44.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 57,5"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=460.0 y=44.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 58,5"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=468.0 y=44.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 59,5"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=476.0 y=44.0
+            GAME.GameSprite frame=13
+        }
+    }
+    - {
+        name "Tile 63,5"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=44.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,6"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=52.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 56,6"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=52.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,6"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=52.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=60.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 43,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=348.0 y=60.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 44,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=356.0 y=60.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 45,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=364.0 y=60.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 46,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=60.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 56,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=60.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,7"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=60.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,8"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=68.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 43,8"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=348.0 y=68.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 46,8"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=68.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 56,8"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=68.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,8"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=68.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=76.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 38,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=76.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 39,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=316.0 y=76.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 40,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=324.0 y=76.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 41,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=332.0 y=76.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 42,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=340.0 y=76.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 43,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=348.0 y=76.0
+            GAME.GameSprite frame=12
+        }
+    }
+    - {
+        name "Tile 46,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=76.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 56,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=76.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,9"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=76.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,10"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=84.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 38,10"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=84.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 46,10"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=84.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 56,10"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=84.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,10"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=84.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=92.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 16,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=132.0 y=92.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 17,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=140.0 y=92.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 18,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=148.0 y=92.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 19,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=156.0 y=92.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 20,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=164.0 y=92.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 21,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=172.0 y=92.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 38,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=92.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 46,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=92.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 56,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=92.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,11"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=92.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=100.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 16,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=132.0 y=100.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 21,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=172.0 y=100.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 38,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=100.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 46,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=372.0 y=100.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 56,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=452.0 y=100.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 63,12"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=100.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,13"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=108.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,13"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=108.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=116.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 31,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=252.0 y=116.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 32,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=260.0 y=116.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 33,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=268.0 y=116.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 34,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=276.0 y=116.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 35,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=284.0 y=116.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 63,14"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=116.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=124.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 10,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=84.0 y=124.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 11,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=92.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 12,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=100.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 13,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=108.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 14,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=116.0 y=124.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 31,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=252.0 y=124.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 35,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=284.0 y=124.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 47,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=380.0 y=124.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 48,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=388.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 49,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=396.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 50,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=404.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 51,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=412.0 y=124.0
+            GAME.GameSprite frame=9
+        }
+    }
+    - {
+        name "Tile 52,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=124.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 63,15"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=124.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=132.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 10,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=84.0 y=132.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 14,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=116.0 y=132.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 31,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=252.0 y=132.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 35,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=284.0 y=132.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 47,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=380.0 y=132.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 52,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=132.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,16"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=132.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,17"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=140.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 31,17"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=252.0 y=140.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 35,17"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=284.0 y=140.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 47,17"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=380.0 y=140.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 52,17"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=140.0
+            GAME.GameSprite frame=6
+        }
+    }
+    - {
+        name "Tile 63,17"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=140.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,18"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=148.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 31,18"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=252.0 y=148.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 35,18"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=284.0 y=148.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 47,18"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=380.0 y=148.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 52,18"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=148.0
+            GAME.GameSprite frame=14
+        }
+    }
+    - {
+        name "Tile 63,18"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=148.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,19"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=156.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,19"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=156.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,20"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=164.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 63,20"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=164.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 0,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=172.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 1,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=12.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 2,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=20.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 3,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=28.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 4,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=36.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 5,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=44.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 6,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=52.0 y=172.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 14,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=116.0 y=172.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 15,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=124.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 16,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=132.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 17,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=140.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 18,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=148.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 19,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=156.0 y=172.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 37,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=300.0 y=172.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 38,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 39,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=316.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 40,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=324.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 41,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=332.0 y=172.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 49,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=396.0 y=172.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 50,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=404.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 51,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=412.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 52,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 53,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=428.0 y=172.0
+            GAME.GameSprite frame=5
+        }
+    }
+    - {
+        name "Tile 59,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=476.0 y=172.0
+            GAME.GameSprite frame=3
+        }
+    }
+    - {
+        name "Tile 60,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=484.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 61,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=492.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 62,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=500.0 y=172.0
+            GAME.GameSprite frame=1
+        }
+    }
+    - {
+        name "Tile 63,21"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=172.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 0,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=4.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 1,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=12.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 2,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=20.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 3,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=28.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 4,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=36.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 5,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=44.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 6,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=52.0 y=180.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 14,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=116.0 y=180.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 15,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=124.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 16,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=132.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 17,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=140.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 18,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=148.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 19,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=156.0 y=180.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 37,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=300.0 y=180.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 38,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=308.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 39,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=316.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 40,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=324.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 41,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=332.0 y=180.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 49,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=396.0 y=180.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 50,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=404.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 51,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=412.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 52,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=420.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 53,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=428.0 y=180.0
+            GAME.GameSprite frame=4
+        }
+    }
+    - {
+        name "Tile 59,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=476.0 y=180.0
+            GAME.GameSprite frame=2
+        }
+    }
+    - {
+        name "Tile 60,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=484.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 61,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=492.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 62,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=500.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
+    - {
+        name "Tile 63,22"
+        prototype "Tile"
+        components {
+            GAME.GameTransform x=508.0 y=180.0
+            GAME.GameSprite frame=0
+        }
+    }
 }
