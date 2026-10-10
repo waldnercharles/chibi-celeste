@@ -1,9 +1,0 @@
-library Room {
-    function Columns() {
-        return 64
-    }
-
-    function Rows() {
-        return 23
-    }
-}
