@@ -3,8 +3,8 @@ behavior CameraFollow {
     player: entity
     level: entity
     on Begin {
-        player = get_global_variable("Player")
-        level = get_global_variable("Level")
+        player = globals.Player
+        level = globals.Level
         self.Transform = Target()
     }
 

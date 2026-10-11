@@ -72,7 +72,7 @@ behavior Player {
     ready := false
 
     on Begin {
-        level = get_global_variable("Level")
+        level = globals.Level
         roomOrigin = level.Transform
         roomWidth = level.Tilemap.Columns * level.Tilemap.FrameWidth
         roomHeight = level.Tilemap.Rows * level.Tilemap.FrameHeight
