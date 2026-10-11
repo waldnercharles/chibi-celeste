@@ -7,14 +7,14 @@ name "Level"
         name "Player"
         prototype "Player"
         components {
-            GAME.GameTransform x=20.0 y=152.0
+            Transform x=20.0 y=152.0
         }
     }
     - {
         name "Camera"
         prototype "Camera"
         components {
-            GAME.GameTransform x=160.0 y=94.0
+            Transform x=160.0 y=94.0
         }
     }
     - name="Room" prototype="Room"
